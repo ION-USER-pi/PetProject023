@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>petproject023</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <style>
+    :root {
+      --primary: #6200ee;
+      --secondary: #03dac6;
+      --background: #121212;
+      --surface: #1e1e1e;
+      --on-background: rgba(255, 255, 255, 0.87);
+      --on-surface: rgba(255, 255, 255, 0.6);
+      --highlight: #bb86fc;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background-color: var(--background);
+      color: var(--on-background);
+      overflow-x: hidden;
+    }
+    
+    header {
+      position: relative;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      overflow: hidden;
+    }
+    
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      animation: float 15s infinite linear;
+    }
+    
+    @keyframes float {
+      0% { transform: translateY(0) translateX(0) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-100vh) translateX(100px) rotate(360deg); opacity: 0; }
+    }
+    
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background-color: rgba(18, 18, 18, 0.8);
+      backdrop-filter: blur(10px);
+      z-index: 1000;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    
+    nav.scrolled {
+      padding: 0.5rem 1rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: var(--highlight);
+      text-decoration: none;
+    }
+    
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+    
+    .nav-links a {
+      color: var(--on-background);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s ease;
+    }
+    
+    .nav-links a:hover {
+      color: var(--highlight);
+    }
+    
+    .mobile-menu-btn {
+      display: none;
+      background: none;
+      border: none;
+      color: var(--on-background);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    
+    .title {
+      font-size: 4rem;
+      font-weight: 900;
+      text-align: center;
+      margin-bottom: 1rem;
+      color: white;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 10;
+    }
+    
+    .subtitle {
+      font-size: 1.5rem;
+      max-width: 600px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.9);
+      margin-bottom: 2rem;
+      z-index: 10;
+    }
+    
+    .cta-btn {
+      background-color: white;
+      color: var(--primary);
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      z-index: 10;
+      text-decoration: none;
+    }
+    
+    .cta-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    section {
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    
+    h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--highlight);
+    }
+    
+    p {
+      font-size: 1.1rem;
+      line-height: 1.7;
+      color: var(--on-surface);
+      margin-bottom: 1.5rem;
+    }
+    
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+    
+    .card {
+      background-color: var(--surface);
+      border-radius: 12px;
+      padding: 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+    
+    .card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--secondary);
+    }
+    
+    .card p {
+      font-size: 1rem;
+      color: var(--on-surface);
+    }
+    
+    .node-container {
+      height: 600px;
+      background-color: var(--surface);
+      border-radius: 12px;
+      margin-top: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .node {
+      position: absolute;
+      background-color: var(--highlight);
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--background);
+      font-weight: bold;
+      box-shadow: 0 4px 20px rgba(187, 134, 252, 0.4);
+      user-select: none;
+      cursor: grab;
+      transition: transform 0.3s ease;
+    }
+    
+    .node:hover {
+      transform: scale(1.1);
+    }
+    
+    .connection {
+      position: absolute;
+      background-color: rgba(187, 134, 252, 0.3);
+      transform-origin: left center;
+      z-index: -1;
+    }
+    
+    .accordion {
+      margin-top: 3rem;
+    }
+    
+    .accordion-item {
+      background-color: var(--surface);
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+    
+    .accordion-header {
+      padding: 1.5rem;
+      background-color: var(--surface);
+      color: var(--on-background);
+      font-weight: bold;
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .accordion-content {
+      padding: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .accordion-content-inner {
+      padding: 0 1.5rem 1.5rem;
+    }
+    
+    .accordion-item.active .accordion-content {
+      max-height: 500px;
+      padding: 0 0 1.5rem;
+    }
+    
+    .accordion-icon {
+      transition: transform 0.3s ease;
+    }
+    
+    .accordion-item.active .accordion-icon {
+      transform: rotate(180deg);
+    }
+    
+    footer {
+      background-color: var(--surface);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .footer-links a {
+      color: var(--on-surface);
+      text-decoration: none;
+      transition: color 0.3s ease;
+    }
+    
+    .footer-links a:hover {
+      color: var(--highlight);
+    }
+    
+    .copyright {
+      color: var(--on-surface);
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      .title {
+        font-size: 2.5rem;
+      }
+      
+      .subtitle {
+        font-size: 1.2rem;
+      }
+      
+      .nav-links {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        height: 100vh;
+        width: 70%;
+        background-color: var(--surface);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        transition: right 0.3s ease;
+        z-index: 999;
+      }
+      
+      .nav-links.active {
+        right: 0;
+      }
+      
+      .mobile-menu-btn {
+        display: block;
+        z-index: 1000;
+      }
+      
+      .mobile-menu-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none;
+        z-index: 998;
+      }
+      
+      .mobile-menu-overlay.active {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav id="navbar">
+    <a href="#" class="logo">OntologyWeb</a>
+    <div class="nav-links" id="navLinks">
+      <a href="#introduction">Introduction</a>
+      <a href="#types">Types</a>
+      <a href="#languages">Languages</a>
+      <a href="#applications">Applications</a>
+    </div>
+    <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+  </nav>
+  
+  <header>
+    <div id="particles"></div>
+    <h1 class="title">Ontologies & Ontology Languages</h1>
+    <p class="subtitle">Structured knowledge representation for the web and beyond</p>
+    <a href="#introduction" class="cta-btn">Explore Now</a>
+  </header>
+  
+  <section id="introduction">
+    <h2>What are Ontologies?</h2>
+    <p>Ontologies are formal, explicit specifications of shared conceptualizations. They provide a way to represent knowledge about a domain in a structured and machine-readable format. Ontologies consist of concepts, relationships between these concepts, and constraints or rules that govern these relationships.</p>
+    <p>Unlike taxonomies which primarily focus on hierarchical relationships, ontologies capture a richer set of relationships and logical constraints, enabling more sophisticated inferencing and knowledge representation.</p>
+    
+    <div class="node-container" id="nodeVisualizer">
+      <!-- Nodes will be generated by JavaScript -->
+    </div>
+  </section>
+  
+  <section id="types">
+    <h2>Types of Ontologies</h2>
+    <p>Ontologies come in various forms, each serving different purposes and levels of abstraction. Understanding these different types helps in selecting the appropriate ontological approach for specific knowledge representation needs.</p>
+    
+    <div class="cards-container">
+      <div class="card">
+        <h3>Upper Ontologies</h3>
+        <p>Define general concepts applicable across domains. Examples include BFO (Basic Formal Ontology), DOLCE, and SUMO. These provide foundational categories for more specific domain ontologies.</p>
+      </div>
+      
+      <div class="card">
+        <h3>Domain Ontologies</h3>
+        <p>Represent concepts within a specific field or domain, such as medicine (SNOMED CT), biology (Gene Ontology), or geography. They capture specialized knowledge of a particular area.</p>
+      </div>
+      
+      <div class="card">
+        <h3>Task Ontologies</h3>
+        <p>Describe vocabulary related to specific activities or tasks, like diagnosing diseases or processing insurance claims, focusing on the procedural aspects of knowledge.</p>
+      </div>
+      
+      <div class="card">
+        <h3>Application Ontologies</h3>
+        <p>Combine domain and task ontologies to be used within specific applications, tailored to particular use cases and software implementations.</p>
+      </div>
+    </div>
+  </section>
+  
+  <section id="languages">
+    <h2>Ontology Languages</h2>
+    <p>Ontology languages provide the formal syntax and semantics for expressing ontological commitments. These languages vary in expressivity, complexity, and computational properties, making different languages suitable for different applications.</p>
+    
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header">
+          RDF (Resource Description Framework) <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            <p>RDF is a foundational data model for semantic web technologies. It represents information as triples (subject-predicate-object), providing a simple yet powerful way to express relationships between resources. RDF uses URIs to uniquely identify resources and relationships.</p>
+            <p>RDF serves as the basis for more expressive ontology languages like RDFS and OWL. While not an ontology language itself, it provides the essential data structure for representing knowledge graphs and linked data.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-item">
+        <div class="accordion-header">
+          RDFS (RDF Schema) <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            <p>RDFS extends RDF with a vocabulary for describing classes and properties. It introduces concepts like rdfs:Class, rdfs:subClassOf, rdfs:domain, and rdfs:range, enabling basic taxonomic structures and simple constraints on property usage.</p>
+            <p>While more expressive than plain RDF, RDFS has limited expressivity compared to OWL. It cannot express complex constraints like disjointness, cardinality restrictions, or logical combinations of classes.</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-item">
+        <div class="accordion-header">
+          OWL (Web Ontology Language) <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            <p>OWL is the most expressive standard ontology language for the Semantic Web. It builds upon RDF and RDFS, adding constructs for expressing complex class relationships, property characteristics, and logical constraints.</p>
+            <p>OWL comes in several profiles or subsets:</p>
+            <ul style="margin-left: 20px; margin-bottom: 15px; list-style-type: disc; color: var(--on-surface);">
+              <li><strong>OWL Lite:</strong> Simplest subset, supporting classification hierarchies and simple constraints.</li>
+              <li><strong>OWL DL:</strong> Based on Description Logics, offering maximum expressiveness while maintaining computational completeness and decidability.</li>
+              <li><strong>OWL Full:</strong> Maximum expressiveness but without computational guarantees.</li>
+              <li><strong>OWL 2 Profiles:</strong> EL, QL, and RL, each optimized for different application scenarios and computational requirements.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="accordion-item">
+        <div class="accordion-header">
+          SKOS (Simple Knowledge Organization System) <span class="accordion-icon">▼</span>
+        </div>
+        <div class="accordion-content">
+          <div class="accordion-content-inner">
+            <p>SKOS is a W3C recommendation designed for representing thesauri, classification schemes, taxonomies, and controlled vocabularies. It bridges the gap between formal ontologies and simpler knowledge organization systems.</p>
+            <p>SKOS provides a model for expressing the basic structure and content of concept schemes, including hierarchical, associative, and mapping relationships between concepts, while remaining simpler than full ontology languages like OWL.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  
+  <section id="applications">
+    <h2>Applications of Ontologies</h2>
+    <p>Ontologies have found applications across numerous fields, revolutionizing how we organize, access, and reason with knowledge. Their structured nature enables powerful capabilities for both humans and machines.</p>
+    
+    <div class="cards-container">
+      <div class="card">
+        <h3>Semantic Web</h3>
+        <p>Ontologies form the backbone of the Semantic Web vision, enabling machines to understand the meaning of data across the web through shared vocabularies and knowledge structures.</p>
+      </div>
+      
+      <div class="card">
+        <h3>Knowledge Graphs</h3>
+        <p>Companies like Google, Amazon, and Facebook use ontology-powered knowledge graphs to enhance search, recommendations, and data integration across their services.</p>
+      </div>
+      
+      <div class="card">
+        <h3>Biomedical Research</h3>
+        <p>Ontologies like Gene Ontology and Disease Ontology facilitate data integration, knowledge discovery, and information retrieval across disparate biomedical datasets.</p>
+      </div>
+      
+      <div class="card">
+        <h3>Natural Language Processing</h3>
+        <p>Ontologies provide structured knowledge for enhancing language understanding, entity recognition, and disambiguation in NLP systems.</p>
+      </div>
+      
+      <div class="card">
+        <h3>Data Integration</h3>
+        <p>Ontologies help align and integrate heterogeneous data sources by providing a common semantic framework for mapping between different schemas and vocabularies.</p>
+      </div>
+      
+      <div class="card">
+        <h3>AI and Machine Learning</h3>
+        <p>Ontologies augment AI systems with background knowledge, improving reasoning capabilities and providing explanatory frameworks for machine learning models.</p>
+      </div>
+    </div>
+  </section>
+  
+  <footer>
+    <div class="footer-links">
+      <a href="#introduction">Introduction</a>
+      <a href="#types">Types</a>
+      <a href="#languages">Languages</a>
+      <a href="#applications">Applications</a>
+    </div>
+    <p class="copyright">© 2025 OntologyWeb - A Resource for Knowledge Representation</p>
+  </footer>
+  
+  <script>
+    // Navigation and UI interactions
+    $(document).ready(function() {
+      // Create particles for the header
+      const particlesCount = 20;
+      const $particles = $('#particles');
+      
+      for (let i = 0; i < particlesCount; i++) {
+        const size = Math.random() * 60 + 20;
+        const $particle = $('<div class="particle"></div>');
+        $particle.css({
+          width: size + 'px',
+          height: size + 'px',
+          left: Math.random() * 100 + '%',
+          top: Math.random() * 100 + '%',
+          animationDelay: Math.random() * 15 + 's',
+          animationDuration: Math.random() * 15 + 15 + 's'
+        });
+        $('header').append($particle);
+      }
+      
+      // Navbar scroll effect
+      $(window).scroll(function() {
+        if ($(window).scrollTop() > 50) {
+          $('#navbar').addClass('scrolled');
+        } else {
+          $('#navbar').removeClass('scrolled');
+        }
+      });
+      
+      // Mobile menu toggle
+      $('#mobileMenuBtn').click(function() {
+        $('#navLinks').toggleClass('active');
+        $('#mobileMenuOverlay').toggleClass('active');
+      });
+      
+      $('#mobileMenuOverlay').click(function() {
+        $('#navLinks').removeClass('active');
+        $(this).removeClass('active');
+      });
+      
+      // Smooth scrolling for navigation links
+      $('a[href^="#"]').on('click', function(e) {
+        e.preventDefault();
+        
+        $('#navLinks').removeClass('active');
+        $('#mobileMenuOverlay').removeClass('active');
+        
+        const target = this.hash;
+        const $target = $(target);
+        
+        $('html, body').animate({
+          'scrollTop': $target.offset().top - 70
+        }, 800, 'swing');
+      });
+      
+      // Accordion functionality
+      $('.accordion-header').click(function() {
+        const $item = $(this).parent();
+        
+        if ($item.hasClass('active')) {
+          $item.removeClass('active');
+        } else {
+          $('.accordion-item').removeClass('active');
+          $item.addClass('active');
+        }
+      });
+      
+      // Create interactive node visualization
+      const $container = $('#nodeVisualizer');
+      const containerWidth = $container.width();
+      const containerHeight = $container.height();
+      
+      // Define nodes and connections
+      const nodes = [
+        { id: 'concept', label: 'Concept', x: 0.5, y: 0.3, size: 80 },
+        { id: 'class', label: 'Class', x: 0.3, y: 0.5, size: 70 },
+        { id: 'instance', label: 'Instance', x: 0.3, y: 0.7, size: 60 },
+        { id: 'property', label: 'Property', x: 0.7, y: 0.5, size: 70 },
+        { id: 'relation', label: 'Relation', x: 0.7, y: 0.7, size: 60 },
+        { id: 'axiom', label: 'Axiom', x: 0.5, y: 0.8, size: 65 }
+      ];
+      
+      const connections = [
+        { from: 'concept', to: 'class' },
+        { from: 'concept', to: 'property' },
+        { from: 'class', to: 'instance' },
+        { from: 'property', to: 'relation' },
+        { from: 'class', to: 'axiom' },
+        { from: 'property', to: 'axiom' },
+        { from: 'concept', to: 'axiom' }
+      ];
+      
+      // Create nodes
+      nodes.forEach(node => {
+        const $node = $('<div class="node"></div>');
+        $node.text(node.label);
+        $node.css({
+          width: node.size + 'px',
+          height: node.size + 'px',
+          left: (node.x * containerWidth - node.size / 2) + 'px',
+          top: (node.y * containerHeight - node.size / 2) + 'px'
+        });
+        $node.attr('id', 'node-' + node.id);
+        $container.append($node);
+        
+        // Make nodes draggable
+        $node.draggable({
+          containment: 'parent',
+          drag: function(event, ui) {
+            updateConnections();
+          }
+        });
+      });
+      
+      // Create connections
+      connections.forEach((conn, index) => {
+        const $connection = $('<div class="connection"></div>');
+        $connection.attr('id', 'connection-' + index);
+        $container.append($connection);
+      });
+      
+      function updateConnections() {
+        connections.forEach((conn, index) => {
+          const $from = $('#node-' + conn.from);
+          const $to = $('#node-' + conn.to);
+          const $connection = $('#connection-' + index);
+          
+          const fromX = $from.position().left + $from.width() / 2;
+          const fromY = $from.position().top + $from.height() / 2;
+          const toX = $to.position().left + $to.width() / 2;
+          const toY = $to.position().top + $to.height() / 2;
+          
+          const length = Math.sqrt(Math.pow(toX - fromX, 2) + Math.pow(toY - fromY, 2));
+          const angle = Math.atan2(toY - fromY, toX - fromX) * 180 / Math.PI;
+          
+          $connection.css({
+            width: length + 'px',
+            left: fromX + 'px',
+            top: fromY + 'px',
+            transform: 'rotate(' + angle + 'deg)',
+            height: '2px'
+          });
+        });
+      }
+      
+      // Initial connection rendering
+      updateConnections();
+      
+      // Update connections on window resize
+      $(window).resize(function() {
+        updateConnections();
+      });
+    });
+  </script>
+</body>
+</html>
